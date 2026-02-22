@@ -902,22 +902,26 @@
                 </div>
             </header>
             <main class="max-w-7xl mx-auto px-6 py-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                     <div
                         class="bg-white dark:bg-slate-800 p-6 rounded-2xl soft-shadow border border-slate-100 dark:border-slate-700">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Site Traffic</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Visits</p>
                         <h3 id="adm-stat-visitors" class="text-2xl font-black text-primary">0</h3>
                     </div>
                     <div
                         class="bg-white dark:bg-slate-800 p-6 rounded-2xl soft-shadow border border-slate-100 dark:border-slate-700">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Joined Conversions
-                        </p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Unique Users</p>
+                        <h3 id="adm-stat-unique" class="text-2xl font-black text-indigo-500">0</h3>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-slate-800 p-6 rounded-2xl soft-shadow border border-slate-100 dark:border-slate-700">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Joined</p>
                         <h3 id="adm-stat-leads" class="text-2xl font-black text-emerald-500">0</h3>
                     </div>
                     <div
                         class="bg-white dark:bg-slate-800 p-6 rounded-2xl soft-shadow border border-slate-100 dark:border-slate-700">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Rate</p>
-                        <h3 id="adm-stat-rate" class="text-2xl font-black text-indigo-500">0%</h3>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Conv. Rate</p>
+                        <h3 id="adm-stat-rate" class="text-2xl font-black text-slate-400">0%</h3>
                     </div>
                 </div>
                 <div class="grid lg:grid-cols-2 gap-8">
@@ -1272,10 +1276,12 @@
                 function loadAdminData() {
                     const leads = JSON.parse(localStorage.getItem('pixfolio_leads') || '[]');
                     const visitors = JSON.parse(localStorage.getItem('pixfolio_analytics') || '[]');
+                    const uniqueIds = new Set(visitors.map(v => v.id)).size;
 
                     document.getElementById('adm-stat-visitors').textContent = visitors.length;
+                    document.getElementById('adm-stat-unique').textContent = uniqueIds;
                     document.getElementById('adm-stat-leads').textContent = leads.length;
-                    document.getElementById('adm-stat-rate').textContent = visitors.length ? ((leads.length / visitors.length) * 100).toFixed(1) + '%' : '0%';
+                    document.getElementById('adm-stat-rate').textContent = uniqueIds ? ((leads.length / uniqueIds) * 100).toFixed(1) + '%' : '0%';
 
                     const fmtDate = (iso) => new Date(iso).toLocaleDateString() + ' ' + new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
