@@ -20,8 +20,7 @@
         // Anti-flicker theme script
         (function () {
             const savedTheme = localStorage.getItem('theme');
-            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            const theme = savedTheme || systemTheme;
+            const theme = savedTheme || 'light';
             if (theme === 'dark') document.documentElement.classList.add('dark');
         })();
     </script>
