@@ -19,6 +19,15 @@
         rel="stylesheet" />
     <link rel="icon" type="image/svg+xml"
         href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233c83f6'%3E%3Cpath d='M19 1H5c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H5V3h14v16zM7 5h4v2H7V5zm0 4h4v2H7V9zm0 4h4v2H7v-2zm6-8h4v2h-4V5zm0 4h4v2h-4V9zm0 4h4v2h-4v-2z'/%3E%3C/svg%3E">
+    <script>
+        // Anti-flicker theme script
+        (function () {
+            const savedTheme = localStorage.getItem('theme');
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const theme = savedTheme || systemTheme;
+            if (theme === 'dark') document.documentElement.classList.add('dark');
+        })();
+    </script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -279,6 +288,12 @@
                     href="#features">Features</a>
                 <a class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors"
                     href="#early-access">Early Access</a>
+                <button id="theme-toggle-desktop"
+                    class="p-2 rounded-lg text-slate-500 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    aria-label="Toggle theme">
+                    <span class="material-symbols-outlined theme-icon-sun hidden dark:block">light_mode</span>
+                    <span class="material-symbols-outlined theme-icon-moon block dark:hidden">dark_mode</span>
+                </button>
             </nav>
             <div class="flex items-center gap-3">
                 <button id="header-cta"
@@ -302,8 +317,17 @@
                 <a href="#features"
                     class="mobile-nav-link text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary py-2.5 border-b border-slate-100 dark:border-slate-800">Features</a>
                 <a href="#early-access"
-                    class="mobile-nav-link text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary py-2.5">Early
+                    class="mobile-nav-link text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary py-2.5 border-b border-slate-100 dark:border-slate-800">Early
                     Access</a>
+                <div class="flex items-center justify-between py-4">
+                    <span class="text-sm font-semibold text-slate-600 dark:text-slate-400">Appearance</span>
+                    <button id="theme-toggle-mobile"
+                        class="p-2 rounded-lg text-slate-500 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        aria-label="Toggle theme">
+                        <span class="material-symbols-outlined theme-icon-sun hidden dark:block">light_mode</span>
+                        <span class="material-symbols-outlined theme-icon-moon block dark:hidden">dark_mode</span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -867,6 +891,21 @@
                         });
                     });
                 }
+
+                /* ── Theme toggle logic ── */
+                const themeToggles = [
+                    document.getElementById('theme-toggle-desktop'),
+                    document.getElementById('theme-toggle-mobile')
+                ];
+
+                function toggleTheme() {
+                    const isDark = document.documentElement.classList.toggle('dark');
+                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                }
+
+                themeToggles.forEach(btn => {
+                    if (btn) btn.addEventListener('click', toggleTheme);
+                });
             })();
 
         /* ── Scroll Animations (IntersectionObserver) ── */
