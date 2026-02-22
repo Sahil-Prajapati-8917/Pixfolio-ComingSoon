@@ -1013,9 +1013,38 @@
                 /* ── Visitor & Lead Tracking ── */
                 function getDeviceInfo() {
                     const ua = navigator.userAgent;
-                    let device = "Desktop";
-                    if (/tablet|ipad|playbook|silk/i.test(ua)) device = "Tablet";
-                    else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Opera Mini/i.test(ua)) device = "Mobile";
+                    const w = window.screen.width;
+                    const h = window.screen.height;
+                    const pr = window.devicePixelRatio;
+
+                    // 1. iPhone Model Mapping
+                    if (ua.includes('iPhone')) {
+                        const pw = Math.min(w, h);
+                        const ph = Math.max(w, h);
+                        if (pw === 430 && ph === 932) return "iPhone 15/14 Pro Max";
+                        if (pw === 393 && ph === 852) return "iPhone 15/14 Pro";
+                        if (pw === 390 && ph === 844) return "iPhone 14/13/12";
+                        if (pw === 428 && ph === 926) return "iPhone 14/13 Pro Max";
+                        if (pw === 375 && ph === 812) return pr === 3 ? "iPhone 13/12 Mini / 11 Pro / X" : "iPhone (Modern)";
+                        if (pw === 414 && ph === 896) return pr === 3 ? "iPhone 11 Pro Max / XS Max" : "iPhone 11 / XR";
+                        if (pw === 375 && ph === 667) return "iPhone SE/8/7";
+                        return "iPhone";
+                    }
+
+                    // 2. Android Model Parsing
+                    if (ua.includes('Android')) {
+                        const match = ua.match(/Android\s([0-9\.]+);?\s?([^;]+)\ Build/);
+                        if (match) return `${match[2]} (Android ${match[1]})`;
+                        const altMatch = ua.match(/\(Linux; Android ([^;]+); ([^)]+)\)/);
+                        if (altMatch) return `${altMatch[2]} (Android ${altMatch[1]})`;
+                        return "Android Device";
+                    }
+
+                    // 3. Desktop / OS Detection
+                    if (ua.includes('Macintosh')) return "Mac (macOS)";
+                    if (ua.includes('Windows NT 10.0')) return "PC (Windows 10/11)";
+                    if (ua.includes('Windows NT 6.1')) return "PC (Windows 7)";
+                    if (ua.includes('Linux')) return "Linux Desktop";
 
                     const browser = (function () {
                         if (ua.includes("Firefox/")) return "Firefox";
@@ -1024,6 +1053,10 @@
                         if (ua.includes("Safari/")) return "Safari";
                         return "Unknown";
                     })();
+
+                    let device = "Desktop";
+                    if (/tablet|ipad|playbook|silk/i.test(ua)) device = "Tablet";
+                    else if (/Mobile|Android/i.test(ua)) device = "Mobile";
 
                     return `${device} (${browser})`;
                 }
