@@ -257,16 +257,18 @@
             pointer-events: auto;
         }
 
-        #px-toast .toast-icon {
-            width: 28px;
-            height: 28px;
-            background: rgba(60, 131, 246, 0.15);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-size: 0.85rem;
+        /* ── Admin Dashboard Overlay ── */
+        #admin-panel {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: #f8fafc;
+            display: none;
+            overflow-y: auto;
+        }
+
+        .dark #admin-panel {
+            background: #0f172a;
         }
     </style>
 </head>
@@ -803,12 +805,138 @@
                 <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Privacy</a>
             </nav>
             <div class="text-right">
-                <p class="text-sm text-slate-400 font-medium">© 2026 Pixfolio. All rights reserved.</p>
+                <p id="admin-trigger"
+                    class="text-sm text-slate-400 font-medium cursor-default hover:text-slate-300 transition-colors">©
+                    2026 Pixfolio. All rights reserved.</p>
                 <p class="text-xs text-slate-400 mt-1">Digital Album Presentation Platform for Professional Wedding
                     Studios.</p>
             </div>
         </div>
     </footer>
+
+    <!-- Admin Panel Overlay -->
+    <div id="admin-panel">
+        <!-- Login Overlay -->
+        <div id="admin-login" class="min-h-screen flex items-center justify-center p-6 bg-slate-50 dark:bg-slate-900">
+            <div class="max-w-md w-full text-center">
+                <div class="mb-8 inline-flex items-center gap-2">
+                    <div class="bg-primary p-2 rounded-xl text-white">
+                        <span class="material-symbols-outlined block">auto_stories</span>
+                    </div>
+                    <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Pixfolio Admin</h1>
+                </div>
+                <div
+                    class="bg-white dark:bg-slate-800 p-8 rounded-3xl soft-shadow border border-slate-100 dark:border-slate-700">
+                    <div id="admin-step-1">
+                        <h2 class="text-xl font-bold mb-2 dark:text-white">Secure Access</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Enter admin password</p>
+                        <input id="admin-pass" type="password"
+                            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mb-4 focus:ring-2 focus:ring-primary/20 dark:text-white"
+                            placeholder="••••••••" />
+                        <button id="admin-login-btn"
+                            class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all">Continue</button>
+                    </div>
+                    <div id="admin-step-2" class="hidden">
+                        <h2 class="text-xl font-bold mb-2 dark:text-white">Verification</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Enter the 6-digit OTP sent to your
+                            device</p>
+                        <input id="admin-otp" type="text" maxlength="6"
+                            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mb-4 focus:ring-2 text-center text-2xl font-black tracking-[0.5em] focus:ring-primary/20 dark:text-white"
+                            placeholder="000000" />
+                        <button id="admin-otp-btn"
+                            class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all">Verify
+                            OTP</button>
+                    </div>
+                    <button onclick="closeAdmin()"
+                        class="mt-4 text-xs text-slate-400 hover:text-primary transition-colors">Back to Site</button>
+                    <p id="admin-error" class="text-red-500 text-xs font-semibold mt-4 hidden">Invalid credentials.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="admin-dashboard" class="hidden">
+            <header
+                class="bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 sticky top-0 z-50">
+                <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="bg-primary p-1 rounded text-white">
+                            <span class="material-symbols-outlined text-sm block">auto_stories</span>
+                        </div>
+                        <span class="font-bold">Admin Panel</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button id="admin-export-btn"
+                            class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary flex items-center gap-1">
+                            <span class="material-symbols-outlined text-lg">download</span> Export
+                        </button>
+                        <button onclick="closeAdmin()"
+                            class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <main class="max-w-7xl mx-auto px-6 py-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div
+                        class="bg-white dark:bg-slate-800 p-6 rounded-2xl soft-shadow border border-slate-100 dark:border-slate-700">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Visitors</p>
+                        <h3 id="adm-stat-visitors" class="text-2xl font-black text-primary">0</h3>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-slate-800 p-6 rounded-2xl soft-shadow border border-slate-100 dark:border-slate-700">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Leads</p>
+                        <h3 id="adm-stat-leads" class="text-2xl font-black text-emerald-500">0</h3>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-slate-800 p-6 rounded-2xl soft-shadow border border-slate-100 dark:border-slate-700">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Rate</p>
+                        <h3 id="adm-stat-rate" class="text-2xl font-black text-indigo-500">0%</h3>
+                    </div>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <section>
+                        <h2 class="text-lg font-bold mb-4">Registration Leads</h2>
+                        <div
+                            class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden soft-shadow overflow-x-auto">
+                            <table class="w-full text-left min-w-[400px]">
+                                <thead
+                                    class="bg-slate-50 dark:bg-slate-900/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                    <tr>
+                                        <th class="px-6 py-3">Email</th>
+                                        <th class="px-6 py-3">Device</th>
+                                        <th class="px-6 py-3">Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adm-leads-list"
+                                    class="text-xs divide-y divide-slate-50 dark:divide-slate-700/50"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                    <section>
+                        <h2 class="text-lg font-bold mb-4">Traffic Log</h2>
+                        <div
+                            class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden soft-shadow overflow-x-auto">
+                            <table class="w-full text-left min-w-[400px]">
+                                <thead
+                                    class="bg-slate-50 dark:bg-slate-900/50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                    <tr>
+                                        <th class="px-6 py-3">Device</th>
+                                        <th class="px-6 py-3">Res</th>
+                                        <th class="px-6 py-3">Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adm-visitors-list"
+                                    class="text-xs divide-y divide-slate-50 dark:divide-slate-700/50 text-slate-500">
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
     <script>
             (function () {
                 /* ── Toast helper ── */
@@ -859,6 +987,68 @@
                     if (btn) btn.addEventListener('click', scrollToForm);
                 });
 
+                /* ── Visitor & Lead Tracking ── */
+                function getDeviceInfo() {
+                    const ua = navigator.userAgent;
+                    let device = "Desktop";
+                    if (/tablet|ipad|playbook|silk/i.test(ua)) device = "Tablet";
+                    else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Opera Mini/i.test(ua)) device = "Mobile";
+
+                    const browser = (function () {
+                        if (ua.includes("Firefox/")) return "Firefox";
+                        if (ua.includes("Edg/")) return "Edge";
+                        if (ua.includes("Chrome/")) return "Chrome";
+                        if (ua.includes("Safari/")) return "Safari";
+                        return "Unknown";
+                    })();
+
+                    return `${device} (${browser})`;
+                }
+
+                async function logVisitor() {
+                    // 1. Migrate legacy emails to leads if needed
+                    const legacyEmails = JSON.parse(localStorage.getItem('pixfolio_emails') || '[]');
+                    if (legacyEmails.length > 0) {
+                        let leads = JSON.parse(localStorage.getItem('pixfolio_leads') || '[]');
+                        legacyEmails.forEach(email => {
+                            if (!leads.some(l => l.email === email)) {
+                                leads.push({ email, device: 'Legacy Import', timestamp: new Date().toISOString(), location: 'Unknown' });
+                            }
+                        });
+                        localStorage.setItem('pixfolio_leads', JSON.stringify(leads));
+                        localStorage.removeItem('pixfolio_emails');
+                    }
+
+                    const visitorId = localStorage.getItem('pixfolio_v_id') || 'v_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('pixfolio_v_id', visitorId);
+
+                    let analytics = JSON.parse(localStorage.getItem('pixfolio_analytics') || '[]');
+                    const now = new Date().toISOString();
+
+                    // Log once per session or if last log was > 1hr ago
+                    const lastLog = analytics.length > 0 ? new Date(analytics[analytics.length - 1].timestamp) : null;
+                    if (!lastLog || (new Date() - lastLog) > 36e5) {
+                        let location = "Detecting...";
+                        try {
+                            const res = await fetch('https://ipapi.co/json/');
+                            const data = await res.json();
+                            location = `${data.city}, ${data.country_name}`;
+                        } catch (e) { location = "Unknown"; }
+
+                        analytics.push({
+                            id: visitorId,
+                            device: getDeviceInfo(),
+                            timestamp: now,
+                            resolution: `${window.innerWidth}x${window.innerHeight}`,
+                            location: location,
+                            referrer: document.referrer || 'Direct'
+                        });
+                        localStorage.setItem('pixfolio_analytics', JSON.stringify(analytics.slice(-100)));
+                        localStorage.setItem('pixfolio_current_loc', location); // store for leads
+                    }
+                }
+                logVisitor();
+
                 /* ── Email capture ── */
                 const emailInput = document.getElementById('email-input');
                 const notifyBtn = document.getElementById('notify-btn');
@@ -880,11 +1070,16 @@
                         const email = emailInput.value.trim();
                         if (!email || !emailRegex.test(email)) { showError(); return; }
 
-                        /* Store in localStorage — no duplicates */
-                        let emails = JSON.parse(localStorage.getItem('pixfolio_emails') || '[]');
-                        if (!emails.includes(email)) {
-                            emails.push(email);
-                            localStorage.setItem('pixfolio_emails', JSON.stringify(emails));
+                        /* Store in leads — include meta */
+                        let leads = JSON.parse(localStorage.getItem('pixfolio_leads') || '[]');
+                        if (!leads.some(l => l.email === email)) {
+                            leads.push({
+                                email,
+                                device: getDeviceInfo(),
+                                timestamp: new Date().toISOString(),
+                                location: localStorage.getItem('pixfolio_current_loc') || 'Unknown'
+                            });
+                            localStorage.setItem('pixfolio_leads', JSON.stringify(leads));
                         }
 
                         /* Show toast */
@@ -927,6 +1122,110 @@
 
                 themeToggles.forEach(btn => {
                     if (btn) btn.addEventListener('click', toggleTheme);
+                });
+
+                /* ── Admin Dashboard Logic ── */
+                const adminTrigger = document.getElementById('admin-trigger');
+                const adminPanel = document.getElementById('admin-panel');
+                const adminLogin = document.getElementById('admin-login');
+                const adminDashboard = document.getElementById('admin-dashboard');
+                const adminStep1 = document.getElementById('admin-step-1');
+                const adminStep2 = document.getElementById('admin-step-2');
+                const adminPassInput = document.getElementById('admin-pass');
+                const adminOtpInput = document.getElementById('admin-otp');
+                const adminLoginBtn = document.getElementById('admin-login-btn');
+                const adminOtpBtn = document.getElementById('admin-otp-btn');
+                const adminError = document.getElementById('admin-error');
+                const adminExportBtn = document.getElementById('admin-export-btn');
+
+                const ADMIN_PASSWORD = 'admin123';
+                let CURRENT_OTP = '';
+
+                window.closeAdmin = function () {
+                    adminPanel.style.display = 'none';
+                    sessionStorage.removeItem('pixfolio_admin_auth'); // Force login every time
+                    adminStep1.classList.remove('hidden');
+                    adminStep2.classList.add('hidden');
+                    adminPassInput.value = '';
+                    adminOtpInput.value = '';
+                };
+
+                adminTrigger.addEventListener('click', () => {
+                    adminPanel.style.display = 'block';
+                    adminLogin.classList.remove('hidden');
+                    adminDashboard.classList.add('hidden');
+                    adminStep1.classList.remove('hidden');
+                    adminStep2.classList.add('hidden');
+                    adminPassInput.focus();
+                });
+
+                adminLoginBtn.addEventListener('click', () => {
+                    if (adminPassInput.value === ADMIN_PASSWORD) {
+                        CURRENT_OTP = Math.floor(100000 + Math.random() * 900000).toString();
+                        console.log("Admin OTP generated: " + CURRENT_OTP);
+                        alert("Verification needed. Your demo OTP is: " + CURRENT_OTP);
+                        adminStep1.classList.add('hidden');
+                        adminStep2.classList.remove('hidden');
+                        adminOtpInput.focus();
+                    } else {
+                        adminError.classList.remove('hidden');
+                        setTimeout(() => adminError.classList.add('hidden'), 2000);
+                    }
+                });
+
+                adminOtpBtn.addEventListener('click', () => {
+                    if (adminOtpInput.value === CURRENT_OTP) {
+                        sessionStorage.setItem('pixfolio_admin_auth', 'true');
+                        showAdminDashboard();
+                    } else {
+                        adminError.classList.remove('hidden');
+                        setTimeout(() => adminError.classList.add('hidden'), 2000);
+                    }
+                });
+
+                adminPassInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') adminLoginBtn.click();
+                });
+
+                adminOtpInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') adminOtpBtn.click();
+                });
+
+                function showAdminDashboard() {
+                    adminLogin.classList.add('hidden');
+                    adminDashboard.classList.remove('hidden');
+                    loadAdminData();
+                }
+
+                function loadAdminData() {
+                    const leads = JSON.parse(localStorage.getItem('pixfolio_leads') || '[]');
+                    const visitors = JSON.parse(localStorage.getItem('pixfolio_analytics') || '[]');
+
+                    document.getElementById('adm-stat-visitors').textContent = visitors.length;
+                    document.getElementById('adm-stat-leads').textContent = leads.length;
+                    document.getElementById('adm-stat-rate').textContent = visitors.length ? ((leads.length / visitors.length) * 100).toFixed(1) + '%' : '0%';
+
+                    const fmtDate = (iso) => new Date(iso).toLocaleDateString() + ' ' + new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    document.getElementById('adm-leads-list').innerHTML = leads.reverse().map(l => `
+                        <tr><td class="px-6 py-4 font-bold text-primary">${l.email}</td><td class="px-6 py-4 text-[10px]">${l.device}</td><td class="px-6 py-4 font-medium">${l.location || 'Unknown'}</td><td class="px-6 py-4 opacity-60">${fmtDate(l.timestamp)}</td></tr>
+                    `).join('') || '<tr><td colspan="4" class="px-6 py-8 text-center italic opacity-40">No joined leads yet.</td></tr>';
+
+                    document.getElementById('adm-visitors-list').innerHTML = visitors.reverse().map(v => `
+                        <tr><td class="px-6 py-4">${v.device}</td><td class="px-6 py-4 font-medium text-emerald-600 dark:text-emerald-400">${v.location || 'Unknown'}</td><td class="px-6 py-4 opacity-60">${fmtDate(v.timestamp)}</td></tr>
+                    `).join('') || '<tr><td colspan="3" class="px-6 py-8 text-center italic opacity-40">No site visitors yet.</td></tr>';
+                }
+
+                adminExportBtn.addEventListener('click', () => {
+                    const leads = JSON.parse(localStorage.getItem('pixfolio_leads') || '[]');
+                    if (!leads.length) return alert('No leads to export');
+                    let csv = 'Email,Device,Timestamp\n' + leads.map(l => `${l.email},${l.device},${l.timestamp}`).join('\n');
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'pixfolio_leads.csv';
+                    a.click();
                 });
             })();
 
