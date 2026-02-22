@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pixfolio | Digital Wedding Album Platform for Professional Studios</title>
+    <meta name="description"
+        content="Elevate your studio with Pixfolio. Transform static PDF albums into immersive, branded, interactive digital book experiences with realistic page-flip effects. Built for professional wedding photographers." />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3c83f6",
+                        "background-light": "#ffffff",
+                        "background-dark": "#101722",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE / Edge */
+        }
+
+        body::-webkit-scrollbar {
+            display: none;
+            /* Chrome / Safari */
+        }
+
+        .soft-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ── Scroll Animation Base ── */
+        .ao {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .ao.ao-scale {
+            transform: scale(0.94) translateY(16px);
+        }
+
+        .ao.ao-left {
+            transform: translateX(-28px);
+        }
+
+        .ao.ao-right {
+            transform: translateX(28px);
+        }
+
+        .ao.ao-fade {
+            transform: none;
+        }
+
+        .ao.visible {
+            opacity: 1;
+            transform: none !important;
+        }
+
+        /* Stagger delay helpers */
+        .ao-d1 {
+            transition-delay: 0.1s;
+        }
+
+        .ao-d2 {
+            transition-delay: 0.2s;
+        }
+
+        .ao-d3 {
+            transition-delay: 0.3s;
+        }
+
+        .ao-d4 {
+            transition-delay: 0.4s;
+        }
+
+        .ao-d5 {
+            transition-delay: 0.5s;
+        }
+
+        /* Hero entrance animation */
+        @keyframes heroFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(32px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-animate {
+            animation: heroFadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .hero-animate-d1 {
+            animation-delay: 0.15s;
+        }
+
+        .hero-animate-d2 {
+            animation-delay: 0.30s;
+        }
+
+        .hero-animate-d3 {
+            animation-delay: 0.45s;
+        }
+
+        .hero-animate-d4 {
+            animation-delay: 0.60s;
+        }
+
+        .hero-animate-d5 {
+            animation-delay: 0.75s;
+        }
+
+        /* Floating glow orbs on hero */
+        @keyframes floatOrb {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-18px);
+            }
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 9999px;
+            filter: blur(80px);
+            animation: floatOrb 6s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb-1 {
+            width: 320px;
+            height: 320px;
+            background: rgba(60, 131, 246, 0.08);
+            top: -80px;
+            left: -80px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 260px;
+            height: 260px;
+            background: rgba(60, 131, 246, 0.06);
+            bottom: -60px;
+            right: -60px;
+            animation-delay: 3s;
+        }
+
+        /* Pulse on CTA button */
+        @keyframes ctaPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(60, 131, 246, 0.35);
+            }
+
+            50% {
+                box-shadow: 0 0 0 10px rgba(60, 131, 246, 0);
+            }
+        }
+
+        #hero-cta,
+        #footer-cta {
+            animation: ctaPulse 2.5s ease-in-out infinite;
+        }
+
+        /* ── Toast ── */
+        #px-toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #1e293b;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 14px 20px;
+            border-radius: 14px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+            border-left: 4px solid #3c83f6;
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
+            max-width: 340px;
+        }
+
+        /* Toast full-width on mobile */
+        @media (max-width: 480px) {
+            #px-toast {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+                max-width: unset;
+            }
+        }
+
+        #px-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        #px-toast .toast-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(60, 131, 246, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-300">
+    <!-- Header -->
+    <header
+        class="sticky top-0 z-50 w-full bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-2 group cursor-pointer">
+                <div class="bg-primary p-1.5 rounded-lg text-white">
+                    <span class="material-symbols-outlined block">auto_stories</span>
+                </div>
+                <h2 class="text-xl font-bold tracking-tight">Pixfolio</h2>
+            </div>
+            <nav class="hidden md:flex items-center gap-10">
+                <a class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors"
+                    href="#home">Home</a>
+                <a class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors"
+                    href="#features">Features</a>
+                <a class="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors"
+                    href="#early-access">Early Access</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <button id="header-cta"
+                    class="bg-primary hover:bg-primary/90 text-white text-sm font-bold px-4 sm:px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-primary/20 whitespace-nowrap">
+                    Pre-register
+                </button>
+                <!-- Mobile nav toggle -->
+                <button id="mobile-menu-btn"
+                    class="md:hidden p-2 rounded-lg text-slate-500 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    aria-label="Open menu">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile nav drawer -->
+        <div id="mobile-nav"
+            class="hidden md:hidden border-t border-slate-100 dark:border-slate-800 bg-white/95 dark:bg-background-dark/95 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
+                <a href="#home"
+                    class="mobile-nav-link text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary py-2.5 border-b border-slate-100 dark:border-slate-800">Home</a>
+                <a href="#features"
+                    class="mobile-nav-link text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary py-2.5 border-b border-slate-100 dark:border-slate-800">Features</a>
+                <a href="#early-access"
+                    class="mobile-nav-link text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary py-2.5">Early
+                    Access</a>
+            </div>
+        </div>
+    </header>
+    <!-- Hero Section -->
+    <section id="home" class="relative pt-20 pb-16 px-6 overflow-hidden">
+        <div class="max-w-4xl mx-auto text-center">
+            <!-- Pill Badge -->
+            <div
+                class="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-full mb-8">
+                <span class="text-primary text-xs font-bold tracking-wider uppercase flex items-center gap-1">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                    </span>
+                    Launching Soon
+                </span>
+            </div>
+            <!-- Headline -->
+            <h1 class="text-4xl sm:text-5xl md:text-7xl font-black text-slate-900 dark:text-white leading-[1.1] mb-6">
+                Pixfolio is the <span class="text-primary">Digital Presentation Standard</span> for Professional
+                Wedding
+                Studios.
+            </h1>
+            <!-- Subheadline -->
+            <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-4 leading-relaxed">
+                Pixfolio helps wedding studios turn static wedding albums into immersive, branded digital book
+                experiences that feel premium, cinematic, and unforgettable.
+            </p>
+            <p class="text-sm font-semibold text-primary mb-10 tracking-wide">Built for studios that care about
+                presentation.</p>
+            <!-- CTA -->
+            <div class="flex items-center justify-center mb-10">
+                <button id="hero-cta"
+                    class="bg-primary hover:bg-primary/90 text-white font-bold px-8 py-4 rounded-xl shadow-lg shadow-primary/25 transition-all hover:scale-105 active:scale-95">
+                    Join Early Access
+                </button>
+            </div>
+            <!-- Countdown Timer -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto mb-10">
+                <div
+                    class="bg-white dark:bg-slate-800 soft-shadow p-6 rounded-2xl border border-slate-50 dark:border-slate-700">
+                    <p id="cd-days" class="text-3xl font-black text-primary">00</p>
+                    <p class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">
+                        Days</p>
+                </div>
+                <div
+                    class="bg-white dark:bg-slate-800 soft-shadow p-6 rounded-2xl border border-slate-50 dark:border-slate-700">
+                    <p id="cd-hours" class="text-3xl font-black text-primary">00</p>
+                    <p class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">
+                        Hours</p>
+                </div>
+                <div
+                    class="bg-white dark:bg-slate-800 soft-shadow p-6 rounded-2xl border border-slate-50 dark:border-slate-700">
+                    <p id="cd-mins" class="text-3xl font-black text-primary">00</p>
+                    <p class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">
+                        Mins</p>
+                </div>
+                <div
+                    class="bg-white dark:bg-slate-800 soft-shadow p-6 rounded-2xl border border-slate-50 dark:border-slate-700">
+                    <p id="cd-secs" class="text-3xl font-black text-primary">00</p>
+                    <p class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">
+                        Secs</p>
+                </div>
+            </div>
+            <!-- Email Capture -->
+            <div class="max-w-lg mx-auto mb-6">
+                <div
+                    class="flex flex-col sm:flex-row gap-3 p-2 bg-white dark:bg-slate-800 soft-shadow rounded-2xl border border-slate-100 dark:border-slate-700 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                    <div class="flex-1 flex items-center px-4">
+                        <span class="material-symbols-outlined text-slate-400 mr-3">mail</span>
+                        <input id="email-input"
+                            class="w-full bg-transparent border-none focus:ring-0 text-slate-900 dark:text-white placeholder:text-slate-400 text-base font-medium"
+                            placeholder="Enter your email" type="email" />
+                    </div>
+                    <button id="notify-btn"
+                        class="bg-primary hover:bg-primary/90 text-white font-bold px-8 py-4 rounded-xl transition-all whitespace-nowrap">
+                        Notify Me
+                    </button>
+                </div>
+            </div>
+            <!-- Trust Text -->
+            <p
+                class="text-slate-500 dark:text-slate-400 text-sm font-medium flex items-center justify-center gap-2 mb-2">
+                <span class="flex -space-x-2">
+                    <span
+                        class="h-6 w-6 rounded-full bg-slate-200 border-2 border-white dark:border-slate-800 inline-block"></span>
+                    <span
+                        class="h-6 w-6 rounded-full bg-slate-300 border-2 border-white dark:border-slate-800 inline-block"></span>
+                    <span
+                        class="h-6 w-6 rounded-full bg-slate-400 border-2 border-white dark:border-slate-800 inline-block"></span>
+                </span>
+                Join 1,200+ professional wedding studios already on the early access list.
+            </p>
+            <p class="text-slate-400 dark:text-slate-500 text-xs font-medium">Trusted by wedding photographers
+                across
+                India and growing globally.</p>
+        </div>
+    </section>
+    <!-- Future of Delivery Section -->
+    <section class="py-16 md:py-20 px-4 sm:px-6 bg-slate-50/60 dark:bg-slate-900/30">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-6">Stop Sending
+                Attachments.
+                Start Delivering Experiences.</h2>
+            <div class="grid md:grid-cols-2 gap-8 mb-10 text-left">
+                <!-- Stop column -->
+                <div
+                    class="bg-white dark:bg-slate-800 rounded-2xl p-8 soft-shadow border border-slate-100 dark:border-slate-700">
+                    <p class="text-xs font-bold uppercase tracking-widest text-red-400 mb-4">Stop sending</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-slate-700 dark:text-slate-300 font-medium">
+                            <span class="material-symbols-outlined text-red-400 text-base">close</span> Heavy PDF
+                            files
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-700 dark:text-slate-300 font-medium">
+                            <span class="material-symbols-outlined text-red-400 text-base">close</span> Google Drive
+                            folders
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-700 dark:text-slate-300 font-medium">
+                            <span class="material-symbols-outlined text-red-400 text-base">close</span> Basic
+                            gallery
+                            links
+                        </li>
+                    </ul>
+                </div>
+                <!-- Start column -->
+                <div class="bg-primary/5 dark:bg-primary/10 rounded-2xl p-8 border border-primary/20">
+                    <p class="text-xs font-bold uppercase tracking-widest text-primary mb-4">Start delivering</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-slate-800 dark:text-slate-100 font-semibold">
+                            <span class="material-symbols-outlined text-primary text-base">check</span> Interactive
+                            digital book experiences
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-800 dark:text-slate-100 font-semibold">
+                            <span class="material-symbols-outlined text-primary text-base">check</span> Branded
+                            studio
+                            presentation
+                        </li>
+                        <li class="flex items-center gap-3 text-slate-800 dark:text-slate-100 font-semibold">
+                            <span class="material-symbols-outlined text-primary text-base">check</span> Premium
+                            client-ready album links
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <p class="text-slate-600 dark:text-slate-400 text-base max-w-2xl mx-auto">Pixfolio transforms your album
+                into a <strong class="text-slate-900 dark:text-white">realistic page-flip digital book</strong> that
+                feels like holding a handcrafted wedding album.</p>
+        </div>
+    </section>
+    <!-- Features Section -->
+    <section id="features" class="py-16 md:py-24 px-4 sm:px-6 bg-slate-50/50 dark:bg-slate-900/30">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4">Built Specifically
+                    for Professional Wedding Studios</h2>
+                <p class="text-slate-600 dark:text-slate-400 text-base md:text-lg">Pixfolio is designed specifically
+                    for photographers who care about presentation, branding, and delivering a premium client
+                    experience.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div
+                    class="bg-white dark:bg-slate-800 p-8 rounded-2xl soft-shadow hover:-translate-y-1 transition-transform border border-slate-50 dark:border-slate-700">
+                    <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-6">
+                        <span class="material-symbols-outlined text-3xl">menu_book</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Interactive Page Flip Experience</h3>
+                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Smooth cinematic page transitions.
+                        Real book-style presentation. Natural browsing on desktop, tablet, and mobile.</p>
+                </div>
+                <!-- Card 2 -->
+                <div
+                    class="bg-white dark:bg-slate-800 p-8 rounded-2xl soft-shadow hover:-translate-y-1 transition-transform border border-slate-50 dark:border-slate-700">
+                    <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-6">
+                        <span class="material-symbols-outlined text-3xl">cloud_done</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Secure Cloud Delivery</h3>
+                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed">High-speed hosting infrastructure
+                        ensures instant album loading, smooth viewing, and reliable access for every client.</p>
+                </div>
+                <!-- Card 3 -->
+                <div
+                    class="bg-white dark:bg-slate-800 p-8 rounded-2xl soft-shadow hover:-translate-y-1 transition-transform border border-slate-50 dark:border-slate-700">
+                    <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-6">
+                        <span class="material-symbols-outlined text-3xl">branding_watermark</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Full Studio Branding</h3>
+                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Your logo, your colors, your
+                        custom
+                        domain, your identity — front and center. No third-party logos. No competing branding.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Split Showcase Section -->
+    <section class="py-16 md:py-24 px-4 sm:px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                <!-- Left: Text -->
+                <div class="flex-1 space-y-8">
+                    <h2
+                        class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-tight">
+                        Replace PDF Album Delivery — Permanently.
+                    </h2>
+                    <p class="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                        Your couples deserve more than attachments. With Pixfolio, each couple gets a dedicated
+                        branded
+                        album link that loads instantly, looks premium, and works on any device.
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3 font-semibold text-slate-800 dark:text-slate-200">
+                            <span
+                                class="material-symbols-outlined text-primary bg-primary/10 rounded-full p-1 text-sm font-black">check</span>
+                            Dedicated branded album link per couple
+                        </li>
+                        <li class="flex items-center gap-3 font-semibold text-slate-800 dark:text-slate-200">
+                            <span
+                                class="material-symbols-outlined text-primary bg-primary/10 rounded-full p-1 text-sm font-black">check</span>
+                            Password-protected access
+                        </li>
+                        <li class="flex items-center gap-3 font-semibold text-slate-800 dark:text-slate-200">
+                            <span
+                                class="material-symbols-outlined text-primary bg-primary/10 rounded-full p-1 text-sm font-black">check</span>
+                            Ultra high-resolution rendering
+                        </li>
+                        <li class="flex items-center gap-3 font-semibold text-slate-800 dark:text-slate-200">
+                            <span
+                                class="material-symbols-outlined text-primary bg-primary/10 rounded-full p-1 text-sm font-black">check</span>
+                            Mobile-optimized viewing across devices
+                        </li>
+                    </ul>
+                    <p class="text-sm font-semibold text-primary">Your studio instantly feels more premium.</p>
+                </div>
+                <!-- Right: Mockup -->
+                <div class="flex-1 relative">
+                    <div class="bg-gradient-to-tr from-primary/5 to-primary/20 absolute inset-0 -rotate-3 rounded-3xl">
+                    </div>
+                    <div
+                        class="relative bg-white dark:bg-slate-800 p-4 rounded-3xl soft-shadow border border-slate-100 dark:border-slate-700">
+                        <img alt="Interactive 3D wedding album mockup showing realistic page flip effect"
+                            class="rounded-2xl w-full h-auto" data-alt="Premium 3D album mockup on white background"
+                            src="https://images.unsplash.com/photo-1732053858438-ab0d93897ef2?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Outcome Section -->
+    <section class="py-16 md:py-20 px-4 sm:px-6 bg-slate-50/70 dark:bg-slate-900/40">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-3">Why Leading Wedding
+                Studios are Switching to Pixfolio</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-base mb-10">The difference shows immediately.</p>
+            <div class="grid md:grid-cols-2 gap-8 text-left">
+                <!-- Before -->
+                <div
+                    class="bg-white dark:bg-slate-800 rounded-2xl p-8 soft-shadow border border-slate-100 dark:border-slate-700">
+                    <p class="text-xs font-bold uppercase tracking-widest text-red-400 mb-5">❌ Before</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-slate-600 dark:text-slate-400 font-medium"><span
+                                class="material-symbols-outlined text-red-400 text-base">close</span> Inbox-clogging
+                            PDF
+                            files</li>
+                        <li class="flex items-center gap-3 text-slate-600 dark:text-slate-400 font-medium"><span
+                                class="material-symbols-outlined text-red-400 text-base">close</span> Unbranded
+                            Drive
+                            links</li>
+                        <li class="flex items-center gap-3 text-slate-600 dark:text-slate-400 font-medium"><span
+                                class="material-symbols-outlined text-red-400 text-base">close</span> Generic
+                            gallery
+                            platforms</li>
+                        <li class="flex items-center gap-3 text-slate-600 dark:text-slate-400 font-medium"><span
+                                class="material-symbols-outlined text-red-400 text-base">close</span> Weak
+                            presentation
+                            value</li>
+                    </ul>
+                </div>
+                <!-- After -->
+                <div class="bg-primary/5 dark:bg-primary/10 rounded-2xl p-8 border border-primary/20">
+                    <p class="text-xs font-bold uppercase tracking-widest text-primary mb-5">✅ After</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3 text-slate-800 dark:text-slate-100 font-semibold"><span
+                                class="material-symbols-outlined text-primary text-base">check</span> Cinematic
+                            digital
+                            album experience</li>
+                        <li class="flex items-center gap-3 text-slate-800 dark:text-slate-100 font-semibold"><span
+                                class="material-symbols-outlined text-primary text-base">check</span> Strong studio
+                            branding</li>
+                        <li class="flex items-center gap-3 text-slate-800 dark:text-slate-100 font-semibold"><span
+                                class="material-symbols-outlined text-primary text-base">check</span> Shareable
+                            premium
+                            album link</li>
+                        <li class="flex items-center gap-3 text-slate-800 dark:text-slate-100 font-semibold"><span
+                                class="material-symbols-outlined text-primary text-base">check</span> Modern,
+                            high-end
+                            client impression</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Engineered Section -->
+    <section class="py-16 md:py-24 px-4 sm:px-6 bg-slate-900 text-white overflow-hidden relative">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-primary rounded-full blur-[120px]"></div>
+            <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-primary rounded-full blur-[120px]"></div>
+        </div>
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <h2 class="text-3xl md:text-4xl font-black mb-4">Engineered for Real Studio Workflows.</h2>
+            <p class="text-slate-400 text-lg mb-4 max-w-2xl mx-auto">Pixfolio is built for working wedding studios.
+            </p>
+            <p class="text-slate-500 text-sm mb-12 max-w-xl mx-auto">This is not for hobby photographers. This is
+                built
+                for serious studios.</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                    <p class="text-white font-semibold text-sm">Studio-Grade Interface</p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                    <p class="text-white font-semibold text-sm">Instant Album Loading</p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                    <p class="text-white font-semibold text-sm">Client-Ready Delivery</p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+                    <p class="text-white font-semibold text-sm">Performance Infrastructure</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Early Access Section -->
+    <section id="early-access" class="py-24 px-6">
+        <div
+            class="max-w-5xl mx-auto bg-slate-50 dark:bg-slate-800/50 rounded-[2.5rem] p-12 md:p-20 text-center border border-slate-100 dark:border-slate-700 relative overflow-hidden">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-8">Limited
+                Founding Studios</p>
+            <div class="relative z-10">
+                <h2 class="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4">Only 100 Founding
+                    Studios.</h2>
+                <p class="text-base font-semibold text-primary mb-6">Founding pricing closes at launch. Spots are
+                    filling fast.</p>
+                <p class="text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto mb-6 leading-relaxed">
+                    We are onboarding studios in controlled batches to maintain platform quality and performance.
+                </p>
+                <ul class="text-slate-600 dark:text-slate-400 text-base space-y-2 mb-10 inline-block text-left">
+                    <li class="flex items-center gap-2"><span class="text-primary font-bold">→</span> Founding
+                        lifetime
+                        pricing</li>
+                    <li class="flex items-center gap-2"><span class="text-primary font-bold">→</span> Priority
+                        feature
+                        access</li>
+                    <li class="flex items-center gap-2"><span class="text-primary font-bold">→</span> Direct roadmap
+                        influence</li>
+                    <li class="flex items-center gap-2"><span class="text-primary font-bold">→</span> Dedicated
+                        onboarding support</li>
+                </ul>
+                <p class="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-10">Spots are limited before
+                    public launch.</p>
+                <button id="footer-cta"
+                    class="bg-primary hover:bg-primary/90 text-white text-lg font-bold px-10 py-5 rounded-2xl shadow-xl shadow-primary/30 transition-all hover:scale-105 active:scale-95">
+                    Reserve Studio Access
+                </button>
+            </div>
+        </div>
+    </section>
+    <!-- Who Is Pixfolio For -->
+    <section class="py-20 px-6 bg-slate-50/60 dark:bg-slate-900/30">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4">Who Is Pixfolio For?
+            </h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mb-10">Not built for casual or free-tier users.</p>
+            <ul class="space-y-3 inline-block text-left">
+                <li class="flex items-center gap-3 text-slate-800 dark:text-slate-100 font-semibold text-base">
+                    <span class="material-symbols-outlined text-primary text-base">check_circle</span> Professional
+                    wedding photographers
+                </li>
+                <li class="flex items-center gap-3 text-slate-800 dark:text-slate-100 font-semibold text-base">
+                    <span class="material-symbols-outlined text-primary text-base">check_circle</span> Premium
+                    wedding
+                    studios
+                </li>
+                <li class="flex items-center gap-3 text-slate-800 dark:text-slate-100 font-semibold text-base">
+                    <span class="material-symbols-outlined text-primary text-base">check_circle</span> Studios
+                    delivering luxury albums
+                </li>
+                <li class="flex items-center gap-3 text-slate-800 dark:text-slate-100 font-semibold text-base">
+                    <span class="material-symbols-outlined text-primary text-base">check_circle</span> Brands that
+                    care
+                    about presentation
+                </li>
+            </ul>
+        </div>
+    </section>
+    <!-- Why Pixfolio Exists -->
+    <section class="py-20 px-6">
+        <div class="max-w-2xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-6">Why Pixfolio Exists</h2>
+            <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed mb-4">Wedding albums are emotional
+                products.</p>
+            <p class="text-slate-600 dark:text-slate-400 text-base leading-relaxed mb-4">The digital version should
+                feel
+                just as premium as the physical one.</p>
+            <p class="text-slate-700 dark:text-slate-200 font-semibold text-base">Pixfolio ensures your digital
+                delivery
+                matches the craftsmanship of your printed album.</p>
+        </div>
+    </section>
+    <!-- FAQ Section -->
+    <section class="py-20 px-6 bg-slate-50/50 dark:bg-slate-900/20">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-12 text-center">Frequently
+                Asked Questions</h2>
+            <div class="space-y-6">
+                <div
+                    class="bg-white dark:bg-slate-800 p-6 rounded-2xl soft-shadow border border-slate-100 dark:border-slate-700">
+                    <h3 class="text-lg font-bold mb-2">Can I use my own studio branding?</h3>
+                    <p class="text-slate-600 dark:text-slate-400">Yes, Pixfolio is built for professional branding.
+                        You can add your logo, use your studio colors, and eventually use your own custom domain for
+                        all album links.</p>
+                </div>
+                <div
+                    class="bg-white dark:bg-slate-800 p-6 rounded-2xl soft-shadow border border-slate-100 dark:border-slate-700">
+                    <h3 class="text-lg font-bold mb-2">How secure are the album links?</h3>
+                    <p class="text-slate-600 dark:text-slate-400">Every album link is private and can be
+                        password-protected. We use studio-grade encryption to ensure your clients' memories are only
+                        accessible to them.</p>
+                </div>
+                <div
+                    class="bg-white dark:bg-slate-800 p-6 rounded-2xl soft-shadow border border-slate-100 dark:border-slate-700">
+                    <h3 class="text-lg font-bold mb-2">Does the page-flip work on mobile?</h3>
+                    <p class="text-slate-600 dark:text-slate-400">Absolutely. Pixfolio is mobile-first. The
+                        interactive page-flip engine is optimized for touch screens, providing a cinematic
+                        experience
+                        on any device.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Final CTA -->
+    <section class="py-24 px-6 bg-primary">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-black text-white mb-4">Your albums already look premium.</h2>
+            <p class="text-primary-100 text-lg text-white/80 mb-8">Now let your delivery match that standard.</p>
+            <p class="text-white/70 text-sm mb-8">Join early access before public launch.</p>
+            <button onclick="document.getElementById('early-access').scrollIntoView({behavior:'smooth'})"
+                class="bg-white text-primary text-lg font-bold px-10 py-5 rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95">
+                Join Early Access
+            </button>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-slate-100 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="flex items-center gap-2">
+                <div class="bg-primary p-1.5 rounded-lg text-white">
+                    <span class="material-symbols-outlined block">auto_stories</span>
+                </div>
+                <span class="text-xl font-bold tracking-tight">Pixfolio</span>
+            </div>
+            <nav class="flex items-center gap-8">
+                <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#home">Home</a>
+                <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors"
+                    href="#features">Features</a>
+                <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors"
+                    href="#early-access">Early Access</a>
+                <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Privacy</a>
+            </nav>
+            <div class="text-right">
+                <p class="text-sm text-slate-400 font-medium">© 2026 Pixfolio. All rights reserved.</p>
+                <p class="text-xs text-slate-400 mt-1">Digital Album Presentation Platform for Professional Wedding
+                    Studios.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+            (function () {
+                /* ── Toast helper ── */
+                const toast = document.createElement('div');
+                toast.id = 'px-toast';
+                toast.innerHTML = '<span class="toast-icon">✓</span><div><strong id="px-toast-title"></strong><p id="px-toast-sub" style="font-size:0.78rem;opacity:0.7;margin:2px 0 0"></p></div>';
+                document.body.appendChild(toast);
+                let toastTimer;
+                function showToast(title, sub) {
+                    document.getElementById('px-toast-title').textContent = title;
+                    document.getElementById('px-toast-sub').textContent = sub || '';
+                    toast.classList.add('show');
+                    clearTimeout(toastTimer);
+                    toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+                }
+
+                /* ── Countdown ── */
+                const launchDate = new Date('2026-03-08T00:00:00').getTime();
+                function pad(n) { return String(n).padStart(2, '0'); }
+                function tick() {
+                    const diff = launchDate - Date.now();
+                    if (diff <= 0) {
+                        ['cd-days', 'cd-hours', 'cd-mins', 'cd-secs'].forEach(id => {
+                            const el = document.getElementById(id);
+                            if (el) el.textContent = '00';
+                        });
+                        return;
+                    }
+                    document.getElementById('cd-days').textContent = pad(Math.floor(diff / 864e5));
+                    document.getElementById('cd-hours').textContent = pad(Math.floor((diff % 864e5) / 36e5));
+                    document.getElementById('cd-mins').textContent = pad(Math.floor((diff % 36e5) / 6e4));
+                    document.getElementById('cd-secs').textContent = pad(Math.floor((diff % 6e4) / 1e3));
+                }
+                tick();
+                setInterval(tick, 1000);
+
+                /* ── Scroll-to-form helper ── */
+                function scrollToForm() {
+                    const section = document.getElementById('early-access');
+                    const input = document.getElementById('email-input');
+                    if (section) section.scrollIntoView({ behavior: 'smooth' });
+                    if (input) setTimeout(() => input.focus(), 600);
+                }
+
+                /* ── CTA buttons — scroll to email form ── */
+                ['hero-cta', 'header-cta', 'footer-cta'].forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) btn.addEventListener('click', scrollToForm);
+                });
+
+                /* ── Email capture ── */
+                const emailInput = document.getElementById('email-input');
+                const notifyBtn = document.getElementById('notify-btn');
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (notifyBtn && emailInput) {
+                    function showError() {
+                        emailInput.style.outline = '2px solid #f87171';
+                        const prev = emailInput.placeholder;
+                        emailInput.placeholder = 'Enter a valid email address';
+                        emailInput.focus();
+                        setTimeout(() => {
+                            emailInput.style.outline = '';
+                            emailInput.placeholder = prev;
+                        }, 2500);
+                    }
+
+                    notifyBtn.addEventListener('click', function () {
+                        const email = emailInput.value.trim();
+                        if (!email || !emailRegex.test(email)) { showError(); return; }
+
+                        /* Store in localStorage — no duplicates */
+                        let emails = JSON.parse(localStorage.getItem('pixfolio_emails') || '[]');
+                        if (!emails.includes(email)) {
+                            emails.push(email);
+                            localStorage.setItem('pixfolio_emails', JSON.stringify(emails));
+                        }
+
+                        /* Show toast */
+                        emailInput.value = '';
+                        showToast('🎉 You\'re registered!', 'You\'re on the early access list.');
+                    });
+
+                    /* Submit on Enter key inside input */
+                    emailInput.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') notifyBtn.click();
+                    });
+                }
+
+                /* ── Mobile menu toggle ── */
+                const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+                const mobileNav = document.getElementById('mobile-nav');
+                const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+
+                if (mobileMenuBtn && mobileNav) {
+                    mobileMenuBtn.addEventListener('click', () => {
+                        mobileNav.classList.toggle('hidden');
+                    });
+                    mobileLinks.forEach(link => {
+                        link.addEventListener('click', () => {
+                            mobileNav.classList.add('hidden');
+                        });
+                    });
+                }
+            })();
+
+        /* ── Scroll Animations (IntersectionObserver) ── */
+        (function () {
+            // Hero elements — animate immediately on load
+            const heroEls = [
+                document.querySelector('#home .inline-flex'),        // pill badge
+                document.querySelector('#home h1'),                  // headline
+                document.querySelector('#home p.mb-4'),              // subheadline
+                document.querySelector('#home p.text-primary'),      // tagline
+                document.querySelector('#home #hero-cta')?.closest('div'), // CTA
+                document.querySelector('#home .grid.grid-cols-2'),   // countdown
+                document.querySelector('#home .max-w-lg'),           // email form
+                document.querySelector('#home p.mb-2'),              // trust text
+            ];
+            heroEls.forEach((el, i) => {
+                if (!el) return;
+                el.classList.add('hero-animate', `hero-animate-d${Math.min(i + 1, 5)}`);
+            });
+
+            // Sections to watch for scroll entry
+            const targets = [];
+
+            // Section headings + subtext
+            document.querySelectorAll('section h2, section h1').forEach(el => {
+                if (!el.closest('#home')) {
+                    el.classList.add('ao');
+                    targets.push(el);
+                }
+            });
+            document.querySelectorAll('section > div > p, section > div > div > p').forEach(el => {
+                if (!el.closest('#home') && !el.closest('[class*="grid"]')) {
+                    el.classList.add('ao', 'ao-d1');
+                    targets.push(el);
+                }
+            });
+
+            // Feature & outcome cards — stagger
+            document.querySelectorAll('.grid.md\\:grid-cols-3 > div, .grid.md\\:grid-cols-2 > div').forEach((el, i) => {
+                el.classList.add('ao', 'ao-scale', `ao-d${Math.min(i % 3 + 1, 5)}`);
+                targets.push(el);
+            });
+
+            // Dark section grid pills
+            document.querySelectorAll('.grid.grid-cols-2.md\\:grid-cols-4 > div').forEach((el, i) => {
+                el.classList.add('ao', `ao-d${Math.min(i + 1, 5)}`);
+                targets.push(el);
+            });
+
+            // Checklist items — stagger
+            document.querySelectorAll('ul > li').forEach((el, i) => {
+                if (!el.closest('#home')) {
+                    el.classList.add('ao', `ao-d${Math.min((i % 4) + 1, 5)}`);
+                    targets.push(el);
+                }
+            });
+
+            // Split section — text left, image right
+            const splitText = document.querySelector('.flex.flex-col.lg\\:flex-row .flex-1.space-y-8');
+            const splitImg = document.querySelector('.flex.flex-col.lg\\:flex-row .flex-1.relative');
+            if (splitText) { splitText.classList.add('ao', 'ao-left'); targets.push(splitText); }
+            if (splitImg) { splitImg.classList.add('ao', 'ao-right'); targets.push(splitImg); }
+
+            // Early access box
+            const eaBox = document.querySelector('#early-access .rounded-\\[2\\.5rem\\]');
+            if (eaBox) { eaBox.classList.add('ao', 'ao-scale'); targets.push(eaBox); }
+
+            // Final CTA section text
+            document.querySelectorAll('.bg-primary h2, .bg-primary p, .bg-primary button').forEach((el, i) => {
+                el.classList.add('ao', `ao-d${Math.min(i + 1, 5)}`);
+                targets.push(el);
+            });
+
+            // Observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+            targets.forEach(el => observer.observe(el));
+        })();
+    </script>
+</body>
+
+</html>
