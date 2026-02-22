@@ -886,6 +886,10 @@
                         <span class="font-bold">Admin Panel</span>
                     </div>
                     <div class="flex items-center gap-4">
+                        <button id="admin-backup-btn"
+                            class="text-sm font-semibold text-primary/80 hover:text-primary flex items-center gap-1">
+                            <span class="material-symbols-outlined text-lg">database</span> Backup All
+                        </button>
                         <button id="admin-export-btn"
                             class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary flex items-center gap-1">
                             <span class="material-symbols-outlined text-lg">download</span> Export
@@ -1193,6 +1197,7 @@
                 const adminOtpBtn = document.getElementById('admin-otp-btn');
                 const adminError = document.getElementById('admin-error');
                 const adminExportBtn = document.getElementById('admin-export-btn');
+                const adminBackupBtn = document.getElementById('admin-backup-btn');
 
                 const ADMIN_PASSWORD = 'admin123';
                 let CURRENT_OTP = '';
@@ -1283,6 +1288,24 @@
                     a.href = url;
                     a.download = 'pixfolio_leads.csv';
                     a.click();
+                });
+
+                adminBackupBtn.addEventListener('click', () => {
+                    const data = {
+                        leads: JSON.parse(localStorage.getItem('pixfolio_leads') || '[]'),
+                        analytics: JSON.parse(localStorage.getItem('pixfolio_analytics') || '[]'),
+                        config: {
+                            theme: localStorage.getItem('theme'),
+                            lastBackup: new Date().toISOString()
+                        }
+                    };
+                    const blob = new Blob([JSON.stringify(data, null, 4)], { type: 'application/json' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `pixfolio_backup_${new Date().toISOString().split('T')[0]}.json`;
+                    a.click();
+                    showToast('📦 Backup Complete!', 'All data saved to JSON file.');
                 });
             })();
 
